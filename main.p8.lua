@@ -128,6 +128,7 @@ function draw_ready_hint()
   palt(0, false)
   palt(11, true)
 
+  spr(105, 36, 24, 7, 2)
   spr(43, 53, 56, 3, 2)
   spr(28, 61, 72)
   spr(46, 60, 84, 2, 1)
