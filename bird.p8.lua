@@ -47,7 +47,11 @@ function cbird:update(tick)
     -- bird gravity
     self.velocity += 0.15
     self.velocity = min(self.velocity, bird_max_velocity)
-    self.y = min(112, self.y + self.velocity)
+    self.y = min(114, self.y + self.velocity)
+
+    if self.y > 112 then
+      globals.state = states.game_over
+    end
 
     -- bird angle
     if self.velocity < bird_angle_change_threshold then
