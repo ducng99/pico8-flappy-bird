@@ -50,7 +50,7 @@ function cbird:update(tick)
     self.y = min(114, self.y + self.velocity)
 
     if self.y > 112 then
-      globals.state = states.game_over
+      globals.update_state(states.game_over)
     end
 
     -- bird angle

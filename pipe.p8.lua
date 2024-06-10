@@ -1,7 +1,7 @@
 cpipe = {}
 cpipepair = {}
 
-local pipe_gap = 68
+local pipe_gap = 69
 local pipe_max_y = 112 - pipe_gap
 
 function cpipe:new(x, y, is_top)
