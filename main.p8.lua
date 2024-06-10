@@ -26,6 +26,8 @@ function _draw()
   if globals.state == states.menu then
     draw_logo()
     draw_button(46, 80, "start")
+  elseif globals.state == states.ready then
+    draw_ready_hint()
   end
 end
 
@@ -116,7 +118,20 @@ end
 function draw_logo()
   palt()
   palt(0, false)
-  palt(12, true)
+  palt(11, true)
 
   spr(96, 28, 24, 10, 2)
+end
+
+function draw_ready_hint()
+  palt()
+  palt(0, false)
+  palt(11, true)
+
+  spr(43, 56, 56, 2, 2)
+  pset(72, 63, 0)
+  spr(28, 54, 66)
+  spr(27, 61, 72)
+  spr(45, 60, 84, 2, 1)
+  spr(25, 72, 84, 2, 1)
 end
