@@ -8,7 +8,7 @@ cbird = {}
 
 local bird_max_velocity = 2.5
 
-local bird_flap_angle = 0.111111
+local bird_flap_angle = 0.055555
 local bird_max_angle = -0.25
 local bird_angle_change_threshold = 2
 
@@ -39,7 +39,7 @@ end
 function cbird:update(tick)
   -- hovering
   if globals.state == states.menu or globals.state == states.ready then
-    self.y = 64 + sin(tick * 0.022) * 2
+    self.y = 62 + sin(tick * 0.022) * 2
   end
 
   -- playing

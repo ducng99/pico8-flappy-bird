@@ -3,6 +3,8 @@ cscoreboard = {}
 function cscoreboard:new()
   local this = {
     y = 128,
+    score_drawing = 0,
+    hiscore_drawing = globals.old_hiscore,
   }
 
   globals.animating = true
@@ -12,13 +14,20 @@ function cscoreboard:new()
   return this
 end
 
-function cscoreboard:update()
+function cscoreboard:update(tick)
   if globals.animating then
     if self.y > 40 then
       local newY = self.y - max(2, min(8, (self.y - 40) / 4))
       self.y = newY < 40 and 40 or newY
     else
-      globals.animating = false
+      if self.score_drawing < globals.score then
+        if tick % 4 == 0 then
+          self.score_drawing += 1
+        end
+      else
+        globals.animating = false
+        self.hiscore_drawing = dget(0)
+      end
     end
   end
 end
@@ -26,6 +35,7 @@ end
 function cscoreboard:draw()
   palt()
   palt(0, false)
+  palt(11, true)
 
   -- board
   rect(20, self.y, 108, self.y + 40, 0)
@@ -48,12 +58,21 @@ function cscoreboard:draw()
   circfill(39, self.y + 24, 8, 6)
 
   -- score
-  local score_str = tostr(globals.score)
-  print(globals.score, 98 - (#score_str * 3 + #score_str - 1), self.y + 13, 0)
-  local hiscore = dget(0)
-  if globals.score > hiscore then
-    hiscore = globals.score
+  self:draw_score_num(self.score_drawing, 98, self.y + 13)
+  self:draw_score_num(self.hiscore_drawing, 98, self.y + 29)
+
+  -- new hiscore badge
+  if self.hiscore_drawing > globals.old_hiscore then
+    spr(62, 66, self.y + 21, 2, 1)
   end
-  local hiscore_str = tostr(hiscore)
-  print(hiscore, 98 - (#hiscore_str * 3 + #hiscore_str - 1), self.y + 29, 0)
+end
+
+function cscoreboard:draw_score_num(num, x, y)
+  local num_chars = split(tostr(num), 1)
+  local drawX = x - (#num_chars * 6 + #num_chars - 1) - 2
+
+  for i = 1, #num_chars do
+    spr(74 + num_chars[i] + (num_chars[i] > 5 and 10 or 0), drawX, y)
+    drawX += 7
+  end
 end

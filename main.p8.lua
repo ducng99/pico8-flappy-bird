@@ -1,5 +1,4 @@
 local tick = 0
-local old_hiscore = 0
 
 local bird = nil
 local pipes = {}
@@ -14,7 +13,7 @@ function _init()
   bird = cbird:new()
   bird.x = 64
 
-  old_hiscore = dget(0)
+  globals.old_hiscore = dget(0)
 
   add(globals.state_listeners[states.game_over], on_game_over)
 end
@@ -57,7 +56,7 @@ function _update60()
   elseif globals.state == states.game_over then
     if ((btnp(4) or btnp(5)) and not globals.animating) new_game()
 
-    if (scoreboard ~= nil) scoreboard:update()
+    if (scoreboard ~= nil) scoreboard:update(tick)
   end
 
   bird:update(tick)
@@ -87,16 +86,16 @@ function new_game()
     cpipepair:new(256 + globals.pipe_pairs_gap),
   }
 
-  -- scoreboard = nil
+  scoreboard = nil
 
   globals.score = 0
+  globals.old_hiscore = dget(0)
   globals.update_state(states.ready)
 end
 
 function on_game_over()
-  if globals.score > old_hiscore then
+  if globals.score > globals.old_hiscore then
     dset(0, globals.score)
-    old_hiscore = globals.score
   end
 
   scoreboard = cscoreboard:new()
