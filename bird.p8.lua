@@ -49,7 +49,7 @@ function cbird:update(tick)
     self.velocity = min(self.velocity, bird_max_velocity)
     self.y = min(114, self.y + self.velocity)
 
-    if self.y > 112 then
+    if globals.state == states.playing and self.y > 112 then
       globals.update_state(states.game_over)
     end
 

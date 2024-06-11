@@ -18,6 +18,7 @@ globals = {
   ground_speed = 0.8,
   pipe_pairs_gap = 96,
   score = 0,
+  animating = false,
 
   state_listeners = {},
   update_state = function(state)

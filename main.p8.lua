@@ -3,6 +3,7 @@ local old_hiscore = 0
 
 local bird = nil
 local pipes = {}
+local scoreboard = nil
 
 local ground_offset = 0
 
@@ -13,8 +14,7 @@ function _init()
   bird = cbird:new()
   bird.x = 64
 
-  globals.hiscore = dget(0)
-  old_hiscore = globals.hiscore
+  old_hiscore = dget(0)
 
   add(globals.state_listeners[states.game_over], on_game_over)
 end
@@ -36,9 +36,10 @@ function _draw()
     draw_button(46, 90, "start")
   elseif globals.state == states.ready then
     draw_ready_hint()
-  elseif globals.state == states.game_over then
-    draw_score_board()
-    draw_button(46, 90, "ok")
+  elseif globals.state == states.game_over and scoreboard ~= nil then
+    scoreboard:draw()
+
+    if (not globals.animating) draw_button(46, 90, "ok")
   end
 end
 
@@ -46,15 +47,17 @@ function _update60()
   tick = (tick + 1) % 32767
 
   if globals.state == states.menu then
-    if (btnp(4) or btnp(5)) new_game()
+    if ((btnp(4) or btnp(5)) and not globals.animating) new_game()
   elseif globals.state == states.ready or globals.state == states.playing then
-    if btnp(4) or btnp(5) then
+    if (btnp(4) or btnp(5)) and not globals.animating then
       bird:flap()
 
       if (globals.state == states.ready) globals.update_state(states.playing)
     end
   elseif globals.state == states.game_over then
-    if (btnp(4) or btnp(5)) new_game()
+    if ((btnp(4) or btnp(5)) and not globals.animating) new_game()
+
+    if (scoreboard ~= nil) scoreboard:update()
   end
 
   bird:update(tick)
@@ -84,6 +87,8 @@ function new_game()
     cpipepair:new(256 + globals.pipe_pairs_gap),
   }
 
+  -- scoreboard = nil
+
   globals.score = 0
   globals.update_state(states.ready)
 end
@@ -93,6 +98,8 @@ function on_game_over()
     dset(0, globals.score)
     old_hiscore = globals.score
   end
+
+  scoreboard = cscoreboard:new()
 end
 
 function draw_ground()
@@ -112,11 +119,11 @@ function draw_score()
 
     -- score to chars
     local score_chars = split(tostr(globals.score), 1)
-    local drawX = 64 - (#score_chars * 8 + (#score_chars - 1)) \ 2
+    local drawX = 64 - (#score_chars * 8 - #score_chars) \ 2
 
     for i = 1, #score_chars do
       spr(64 + score_chars[i], drawX, 10, 1, 2)
-      drawX += 9
+      drawX += 7
     end
   end
 end
@@ -153,34 +160,3 @@ function draw_ready_hint()
   spr(25, 72, 84, 3, 1)
 end
 
-function draw_score_board()
-  palt()
-  palt(0, false)
-
-  -- board
-  rect(20, 40, 108, 80, 0)
-  rect(21, 41, 107, 79, 15)
-  line(22, 42, 106, 42, 5)
-  line(22, 42, 22, 78, 5)
-  line(22, 78, 106, 78, 7)
-  line(106, 42, 106, 78, 7)
-  rectfill(23, 43, 105, 77, 15)
-
-  -- labels
-  print("medal", 30, 46, 5)
-  print("score", 79, 46, 5)
-  print("best", 83, 62, 5)
-
-  -- medal placeholder
-  circfill(38, 64, 8, 6)
-
-  -- score
-  local score_str = tostr(globals.score)
-  print(globals.score, 98 - (#score_str * 3 + #score_str - 1), 52, 0)
-  local hiscore = dget(0)
-  if (globals.score > hiscore) then
-    hiscore = globals.score
-  end
-  local hiscore_str = tostr(hiscore)
-  print(hiscore, 98 - (#hiscore_str * 3 + #hiscore_str - 1), 68, 0)
-end
