@@ -3,11 +3,14 @@ local tick = 0
 local bird = nil
 local pipes = {}
 local scoreboard = nil
+local timers = {}
 
 local ground_offset = 0
 
-local isTransitioningNewGame = false
+local transitionNewGameOn = false
 local transitionNewGameHeight = 0
+local transitionGameOverOn = false
+local transitionGameOverHeight = 0
 
 function _init()
   cartdata("maxhyt_flappy_bird")
@@ -44,8 +47,16 @@ function _draw()
     if (globals.animating == 0) draw_button(46, 90, "ok")
   end
 
-  if isTransitioningNewGame then
-    rectfill(0, 128 - transitionNewGameHeight, 128, 128, 0)
+  if globals.state == states.game_over and transitionGameOverHeight > 0 then
+    palt()
+    palt(0, false)
+    palt(11, true)
+
+    spr(128, 32, -64 + transitionGameOverHeight, 8, 2)
+  end
+
+  if transitionNewGameHeight > 0 then
+    draw_transition_new_game()
   end
 end
 
@@ -61,6 +72,18 @@ function _update60()
       if (globals.state == states.ready) globals.update_state(states.playing)
     end
   elseif globals.state == states.game_over then
+    if transitionGameOverOn then
+      if transitionGameOverHeight >= 80 then
+        transitionGameOverOn = false
+        add(timers, ctimer:new(tick + 40, function ()
+          globals.animating -= 1
+          scoreboard = cscoreboard:new()
+        end))
+      else
+        transitionGameOverHeight += 2
+      end
+    end
+
     if ((btnp(4) or btnp(5)) and globals.animating == 0) new_game_transition()
 
     if (scoreboard ~= nil) scoreboard:update(tick)
@@ -84,24 +107,34 @@ function _update60()
     end)
   end
 
-  if isTransitioningNewGame then
-    if globals.state ~= states.ready then
+  if transitionNewGameOn then
+    if globals.state ~= states.ready and transitionNewGameHeight < 136 then
       transitionNewGameHeight += 5
 
-      if (transitionNewGameHeight >= 128) new_game()
+      if transitionNewGameHeight >= 136 then
+        transitionNewGameHeight = 136
+        new_game()
+      end
     else
       transitionNewGameHeight -= 5
 
-      if (transitionNewGameHeight <= 0) then
-        isTransitioningNewGame = false
+      if transitionNewGameHeight <= 0 then
+        transitionNewGameHeight = 0
+        transitionNewGameOn = false
         globals.animating -= 1
       end
+    end
+  end
+
+  for i = 1, #timers do
+    if not timers[i]:update(tick) then
+      deli(timers, i)
     end
   end
 end
 
 function new_game_transition()
-  isTransitioningNewGame = true
+  transitionNewGameOn = true
   globals.animating += 1
 end
 
@@ -125,7 +158,9 @@ function on_game_over()
     dset(0, globals.score)
   end
 
-  scoreboard = cscoreboard:new()
+  globals.animating += 1
+  transitionGameOverOn = true
+  transitionGameOverHeight = 0
 end
 
 function draw_ground()
@@ -186,3 +221,13 @@ function draw_ready_hint()
   spr(25, 72, 84, 3, 1)
 end
 
+function draw_transition_new_game()
+  rectfill(0, 136 - transitionNewGameHeight, 128, 128, 0)
+  for i = 0, 16 do
+    if rnd(1) > 0.5 then
+      local x = i * 8
+      local y = 136 - transitionNewGameHeight - 8
+      rectfill(x, y, x + 8, y + 8, 0)
+    end
+  end
+end
