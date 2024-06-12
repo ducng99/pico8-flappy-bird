@@ -6,6 +6,9 @@ local scoreboard = nil
 
 local ground_offset = 0
 
+local isTransitioningNewGame = false
+local transitionNewGameHeight = 0
+
 function _init()
   cartdata("maxhyt_flappy_bird")
 
@@ -38,7 +41,11 @@ function _draw()
   elseif globals.state == states.game_over and scoreboard ~= nil then
     scoreboard:draw()
 
-    if (not globals.animating) draw_button(46, 90, "ok")
+    if (globals.animating == 0) draw_button(46, 90, "ok")
+  end
+
+  if isTransitioningNewGame then
+    rectfill(0, 128 - transitionNewGameHeight, 128, 128, 0)
   end
 end
 
@@ -46,15 +53,15 @@ function _update60()
   tick = (tick + 1) % 32767
 
   if globals.state == states.menu then
-    if ((btnp(4) or btnp(5)) and not globals.animating) new_game()
+    if ((btnp(4) or btnp(5)) and globals.animating == 0) new_game_transition()
   elseif globals.state == states.ready or globals.state == states.playing then
-    if (btnp(4) or btnp(5)) and not globals.animating then
+    if (btnp(4) or btnp(5)) and globals.animating == 0 then
       bird:flap()
 
       if (globals.state == states.ready) globals.update_state(states.playing)
     end
   elseif globals.state == states.game_over then
-    if ((btnp(4) or btnp(5)) and not globals.animating) new_game()
+    if ((btnp(4) or btnp(5)) and globals.animating == 0) new_game_transition()
 
     if (scoreboard ~= nil) scoreboard:update(tick)
   end
@@ -76,6 +83,26 @@ function _update60()
       end
     end)
   end
+
+  if isTransitioningNewGame then
+    if globals.state ~= states.ready then
+      transitionNewGameHeight += 5
+
+      if (transitionNewGameHeight >= 128) new_game()
+    else
+      transitionNewGameHeight -= 5
+
+      if (transitionNewGameHeight <= 0) then
+        isTransitioningNewGame = false
+        globals.animating -= 1
+      end
+    end
+  end
+end
+
+function new_game_transition()
+  isTransitioningNewGame = true
+  globals.animating += 1
 end
 
 function new_game()

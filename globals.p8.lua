@@ -19,7 +19,7 @@ globals = {
   pipe_pairs_gap = 96,
   score = 0,
   old_hiscore = 0,
-  animating = false,
+  animating = 0,
 
   state_listeners = {},
   update_state = function(state)

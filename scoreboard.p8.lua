@@ -5,9 +5,10 @@ function cscoreboard:new()
     y = 128,
     score_drawing = 0,
     hiscore_drawing = globals.old_hiscore,
+    animating = true,
   }
 
-  globals.animating = true
+  globals.animating += 1
 
   setmetatable(this, self)
   self.__index = self
@@ -15,7 +16,7 @@ function cscoreboard:new()
 end
 
 function cscoreboard:update(tick)
-  if globals.animating then
+  if self.animating then
     if self.y > 40 then
       local newY = self.y - max(2, min(8, (self.y - 40) / 4))
       self.y = newY < 40 and 40 or newY
@@ -25,7 +26,8 @@ function cscoreboard:update(tick)
           self.score_drawing += 1
         end
       else
-        globals.animating = false
+        globals.animating -= 1
+        self.animating = false
         self.hiscore_drawing = dget(0)
       end
     end
