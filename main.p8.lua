@@ -25,7 +25,9 @@ function _init()
 end
 
 function _draw()
-  cls(1)
+  cls(12)
+
+  draw_background()
 
   foreach(pipes, function(pipe)
     pipe:draw()
@@ -52,7 +54,7 @@ function _draw()
     palt(0, false)
     palt(11, true)
 
-    spr(128, 32, -64 + transitionGameOverHeight, 8, 2)
+    spr(128, 32, -80 + transitionGameOverHeight, 8, 2)
   end
 
   if transitionNewGameHeight > 0 then
@@ -73,7 +75,7 @@ function _update60()
     end
   elseif globals.state == states.game_over then
     if transitionGameOverOn then
-      if transitionGameOverHeight >= 80 then
+      if transitionGameOverHeight >= 96 then
         transitionGameOverOn = false
         add(timers, ctimer:new(tick + 40, function ()
           globals.animating -= 1
@@ -180,11 +182,11 @@ function draw_score()
 
     -- score to chars
     local score_chars = split(tostr(globals.score), 1)
-    local drawX = 64 - (#score_chars * 8 - #score_chars) \ 2
+    local draw_x = 64 - (#score_chars * 8 - #score_chars) \ 2
 
     for i = 1, #score_chars do
-      spr(64 + score_chars[i], drawX, 10, 1, 2)
-      drawX += 7
+      spr(64 + score_chars[i], draw_x, 10, 1, 2)
+      draw_x += 7
     end
   end
 end
@@ -230,4 +232,27 @@ function draw_transition_new_game()
       rectfill(x, y, x + 8, y + 8, 0)
     end
   end
+end
+
+function draw_background()
+  palt()
+  palt(0, true)
+
+  -- clouds
+  spr(160, 0, 75, 14, 2)
+  spr(160, 108, 75, 14, 2)
+
+  -- buildings
+  rectfill(0, 91, 128, 103, 7)
+
+  local building_x = -20
+  for i = 0, 4 do
+    spr(136, building_x + i * 34, 98, 5, 2)
+    spr(158, building_x + i * 34, 90, 2, 1)
+    spr(142, building_x + i * 34 + 16, 90, 2, 1)
+  end
+
+  -- grass
+  spr(192, 0, 104, 9, 2)
+  spr(192, 69, 104, 9, 2)
 end

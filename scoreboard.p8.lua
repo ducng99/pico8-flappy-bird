@@ -22,7 +22,7 @@ function cscoreboard:update(tick)
       self.y = newY < 40 and 40 or newY
     else
       if self.score_drawing < globals.score then
-        if tick % 4 == 0 then
+        if tick % 3 == 0 then
           self.score_drawing += 1
         end
       else
@@ -71,10 +71,10 @@ end
 
 function cscoreboard:draw_score_num(num, x, y)
   local num_chars = split(tostr(num), 1)
-  local drawX = x - (#num_chars * 6 + #num_chars - 1) - 2
+  local draw_x = x - (#num_chars * 6 + #num_chars - 1) - 2
 
   for i = 1, #num_chars do
-    spr(74 + num_chars[i] + (num_chars[i] > 5 and 10 or 0), drawX, y)
-    drawX += 7
+    spr(74 + num_chars[i] + (num_chars[i] > 5 and 10 or 0), draw_x, y)
+    draw_x += 7
   end
 end
