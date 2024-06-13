@@ -247,9 +247,9 @@ function draw_background()
 
   local building_x = -20
   for i = 0, 4 do
-    spr(136, building_x + i * 34, 98, 5, 2)
-    spr(158, building_x + i * 34, 90, 2, 1)
-    spr(142, building_x + i * 34 + 16, 90, 2, 1)
+    spr(136, building_x + i * 34, 99, 5, 2)
+    spr(158, building_x + i * 34, 91, 2, 1)
+    spr(142, building_x + i * 34 + 16, 91, 2, 1)
   end
 
   -- grass
