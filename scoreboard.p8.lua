@@ -1,5 +1,23 @@
 cscoreboard = {}
 
+local medal_color_map = {
+  bronze = {
+    [5] = 4,
+    [6] = 9,
+    [7] = 10,
+    [13] = 8,
+  },
+  gold = {
+    [5] = 4,
+    [6] = 10,
+    [13] = 9,
+  },
+  platinum = {
+    [6] = 7,
+    [13] = 6,
+  },
+}
+
 function cscoreboard:new()
   local this = {
     y = 128,
@@ -57,7 +75,21 @@ function cscoreboard:draw()
   print("best", 83, self.y + 22, 5)
 
   -- medal placeholder
-  circfill(39, self.y + 24, 8, 6)
+  if self.animating or globals.score < 10 then
+    circfill(39, self.y + 24, 10, 6)
+  end
+
+  if not self.animating then
+    if globals.score >= 10 and globals.score < 20 then
+      self:draw_medal("bronze")
+    elseif globals.score >= 20 and globals.score < 30 then
+      self:draw_medal("silver")
+    elseif globals.score >= 30 and globals.score < 40 then
+      self:draw_medal("gold")
+    elseif globals.score >= 40 then
+      self:draw_medal("platinum")
+    end
+  end
 
   -- score
   self:draw_score_num(self.score_drawing, 98, self.y + 13)
@@ -70,11 +102,37 @@ function cscoreboard:draw()
 end
 
 function cscoreboard:draw_score_num(num, x, y)
+  palt()
+  palt(0, false)
+  palt(11, true)
+
   local num_chars = split(tostr(num), 1)
   local draw_x = x - (#num_chars * 6 + #num_chars - 1) - 2
 
   for i = 1, #num_chars do
     spr(74 + num_chars[i] + (num_chars[i] > 5 and 10 or 0), draw_x, y)
     draw_x += 7
+  end
+end
+
+local medal_sprite_pos = { x = 8 * (201 % 16), y = 8 * (201 \ 16) }
+
+function cscoreboard:draw_medal(type)
+  palt()
+  palt(0, false)
+
+  if type == "silver" then
+    palt(11, true)
+    spr(201, 29, self.y + 13, 3, 3)
+  else
+    for x = 0, 21 do
+      for y = 0, 21 do
+        local color = sget(medal_sprite_pos.x + x, medal_sprite_pos.y + y)
+
+        if color ~= 11 then
+          pset(29 + x, self.y + 13 + y, medal_color_map[type][color] or color)
+        end
+      end
+    end
   end
 end
