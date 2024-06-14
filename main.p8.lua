@@ -104,6 +104,7 @@ function _update60()
 
       -- collision detection
       if pipe:collides(bird) then
+        music(0)
         globals.update_state(states.game_over)
       end
     end)
@@ -138,6 +139,7 @@ end
 function new_game_transition()
   transitionNewGameOn = true
   globals.animating += 1
+  sfx(4)
 end
 
 function new_game()
@@ -160,6 +162,7 @@ function on_game_over()
     dset(0, globals.score)
   end
 
+  sfx(4)
   globals.animating += 1
   transitionGameOverOn = true
   transitionGameOverHeight = 0

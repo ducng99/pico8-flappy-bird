@@ -26,6 +26,7 @@ function cscoreboard:new()
     animating = true,
   }
 
+  sfx(4)
   globals.animating += 1
 
   setmetatable(this, self)

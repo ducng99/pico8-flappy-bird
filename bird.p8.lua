@@ -74,6 +74,7 @@ function cbird:update(tick)
 end
 
 function cbird:flap()
+  sfx(0)
   if self.y > 0 then
     self.velocity = -3
   end

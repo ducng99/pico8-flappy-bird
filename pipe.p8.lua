@@ -60,6 +60,7 @@ function cpipepair:update()
     self.pipe_bottom.y = self.pipe_top.y + pipe_gap
     self.scored = false
   elseif not self.scored and self.pipe_top.x < 4 then
+    sfx(1)
     globals.score += 1
     self.scored = true
   end
