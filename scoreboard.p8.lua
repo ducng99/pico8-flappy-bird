@@ -24,6 +24,7 @@ function cscoreboard:new()
     score_drawing = 0,
     hiscore_drawing = globals.old_hiscore,
     animating = true,
+    sparkle = { x = rnd(18) + 29, y = rnd(18) + 141, d = 0, grow = true },
   }
 
   sfx(4)
@@ -48,6 +49,24 @@ function cscoreboard:update(tick)
         globals.animating -= 1
         self.animating = false
         self.hiscore_drawing = dget(0)
+      end
+    end
+  else
+    if tick % 5 == 0 then
+      if self.sparkle.grow then
+        self.sparkle.d += 1
+
+        if self.sparkle.d > 2 then
+          self.sparkle.grow = false
+        end
+      else
+        self.sparkle.d -= 1
+
+        if self.sparkle.d == 0 then
+          self.sparkle.x = rnd(18) + 29
+          self.sparkle.y = rnd(18) + self.y + 13
+          self.sparkle.grow = true
+        end
       end
     end
   end
@@ -75,9 +94,9 @@ function cscoreboard:draw()
   print("best", 83, self.y + 23, 7)
   print("best", 83, self.y + 22, 5)
 
-  -- medal placeholder
+  -- medals
   if self.animating or globals.score < 10 then
-    circfill(39, self.y + 24, 10, 6)
+    spr(204, 29, self.y + 13, 3, 3)
   end
 
   if not self.animating then
@@ -89,6 +108,19 @@ function cscoreboard:draw()
       self:draw_medal("gold")
     elseif globals.score >= 40 then
       self:draw_medal("platinum")
+    end
+
+    -- sparkle
+    if globals.score >= 10 then
+      if self.sparkle.d == 1 then
+        pset(self.sparkle.x, self.sparkle.y, 7)
+      elseif self.sparkle.d == 2 then
+        palt()
+        spr(174, self.sparkle.x - 1, self.sparkle.y - 1)
+      else
+        palt()
+        spr(175, self.sparkle.x - 2, self.sparkle.y - 2)
+      end
     end
   end
 
