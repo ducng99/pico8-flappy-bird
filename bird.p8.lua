@@ -50,6 +50,7 @@ function cbird:update(tick)
     self.y = min(114, self.y + self.velocity)
 
     if globals.state == states.playing and self.y > 112 then
+      music(0)
       globals.update_state(states.game_over)
     end
 

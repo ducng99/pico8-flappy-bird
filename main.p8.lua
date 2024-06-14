@@ -83,6 +83,10 @@ function _update60()
         end))
       else
         transitionGameOverHeight += 2
+
+        if transitionGameOverHeight == 80 then
+          sfx(4)
+        end
       end
     end
 
@@ -162,7 +166,6 @@ function on_game_over()
     dset(0, globals.score)
   end
 
-  sfx(4)
   globals.animating += 1
   transitionGameOverOn = true
   transitionGameOverHeight = 0
